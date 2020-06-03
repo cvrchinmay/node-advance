@@ -1,23 +1,18 @@
-const puppeteer = require('puppeteer');
 const sessionFactory = require('./factories/sessionFactory');
 const userFactory = require('./factories/userFactory');
+const Page = require('./helpers/page');
 
-let browser;
 let page;
 
 // it runs before every test
 beforeEach(async () => {
-    browser = await puppeteer.launch({
-        headless: false,                                    // headless -> false will launch physical browser 
-        args: ['--no-sandbox']
-    });
-    page = await browser.newPage();
+    page = await Page.build();
     await page.goto('localhost:3000');
 })
 
 // it runs after every test
 afterEach(async () => {
-    await browser.close();
+    await page.close();
 })
 
 // validate header
@@ -35,7 +30,7 @@ test('clicking on login starts oAuth Flow', async () => {
 })
 
 // validate log out button
-test.only('when signed in, show logout button', async () => {
+test('when signed in, show logout button', async () => {
     const user = await userFactory();
     const { session, sig } = sessionFactory(user);
     
